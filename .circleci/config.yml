@@ -1,0 +1,148 @@
+---
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
+
+executors:
+  linux_executor:
+    docker:
+      - image: circleci/openjdk:11.0.4-jdk-stretch
+        auth:
+          username: $DOCKER_USER_RO
+          password: $DOCKER_PASSWORD_RO
+    resource_class: medium
+    working_directory: ~/jc-kzg-4844
+    environment:
+      GRADLE_OPTS: -Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
+
+  mac_os_executor:
+    macos:
+      xcode: "12.5.0"
+    resource_class: medium
+    working_directory: ~/jc-kzg-4844
+    environment:
+      GRADLE_OPTS: -Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
+      HOMEBREW_NO_AUTO_UPDATE: true
+
+commands:
+  checkout_code:
+    description: "Prepare - Checkout code"
+    steps:
+      - checkout
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule update --init --recursive
+
+  build_c_kzg_4844:
+    description: "Build C-KZG-4844"
+    steps:
+      - run:
+          command: |
+            cd c-kzg-4844/src
+            make blst
+            make lib
+
+  build_java_binding:
+    description: "Build Java binding"
+    steps:
+      - run:
+          command: |
+            cd c-kzg-4844/bindings/java
+            make build
+
+jobs:
+  x86-64-linux-build:
+    executor: linux_executor
+    environment:
+      SKIP_GRADLE: true
+    steps:
+      - checkout_code
+      - build_c_kzg_4844
+      - build_java_binding
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.so
+            -
+  mac-os-build:
+    executor: mac_os_executor
+    environment:
+      SKIP_GRADLE: true
+    steps:
+      - checkout_code
+      - build_c_kzg_4844
+      - build_java_binding
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.dylib
+
+  windows-build:
+    executor: win/default
+    environment:
+      SKIP_GRADLE: true
+    steps:
+      - checkout_code
+      - build_c_kzg_4844
+      - build_java_binding
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.dll
+
+  assemble:
+    executor: linux_executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/jc-kzg-4844
+      - run:
+          name: Copy C-KZG-4844 Sources
+          command: |
+
+            cd c-kzg-4844/bindings/java/
+            
+            SRCDIR="../../../src/main/java/ethereum/ckzg4844"
+            RESOURCEDIR="../../../src/main/resources/ethereum/ckzg4844/lib"
+            
+            mkdir -p $SRCDIR $RESOURCEDIR
+            
+            cp src/main/java/ethereum/ckzg4844/*.java $SRCDIR
+            
+            LIBDIR="src/main/resources/ethereum/ckzg4844/lib/"
+            
+            cp "$LIBDIR/*.dll" $RESOURCEDIR
+            cp "$LIBDIR/*.so" $RESOURCEDIR
+            cp "$LIBDIR/*.dylib" $RESOURCEDIR
+
+      - run:
+          name: Build Jar
+          command: |
+            ./gradlew --no-daemon --parallel build
+
+      - run:
+          name: Check Jar
+          command: |
+            ./gradlew --no-daemon checkJarContents
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./
+
+      - store_artifacts:
+          name: Store Jar
+          path: build/libs
+
+  publish:
+    executor: linux_executor
+    steps:
+      - checkout_code
+      - attach_workspace:
+          at: .
+      - run:
+          name: Publish
+          command: |
+            ./gradlew --no-daemon --parallel checkJarContents publish
