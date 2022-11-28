@@ -208,5 +208,5 @@ workflows:
               only:
                 - master
           context:
-            - quorum-gradle
+            - cloudsmith-protocols
             - dockerhub-quorumengineering-ro
