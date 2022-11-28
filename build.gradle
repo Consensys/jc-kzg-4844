@@ -12,8 +12,8 @@ group = "tech.pegasys"
 version = calculatePublishVersion()
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = 11
+    targetCompatibility = 11
     withSourcesJar()
     withJavadocJar()
 }

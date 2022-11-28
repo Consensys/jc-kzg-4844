@@ -97,7 +97,7 @@ jobs:
           name: "Build C-KZG-4844"
           command: |
             cd c-kzg-4844/src
-            make BLST_BUILD_SCRIPT=build.bat blst
+            make blst
             make CLANG_EXECUTABLE=gcc lib
       - run:
           name: "Build Java binding"
