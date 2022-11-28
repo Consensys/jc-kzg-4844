@@ -59,6 +59,10 @@ jobs:
       SKIP_GRADLE: true
     steps:
       - checkout_code
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get install clang
       - build_c_kzg_4844
       - build_java_binding
       - persist_to_workspace:
