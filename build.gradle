@@ -1,0 +1,115 @@
+plugins {
+    id "maven-publish"
+    id "org.ajoberstar.grgit" version "5.0.0"
+}
+
+rootProject.version = calculatePublishVersion()
+
+apply plugin: "java"
+apply plugin: "maven-publish"
+
+group = "tech.pegasys"
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set("javadoc")
+    from javadoc.destinationDir
+}
+
+def cloudsmithUser = project.hasProperty("cloudsmithUser") ? project.property("cloudsmithUser") : System.getenv("CLOUDSMITH_USER")
+def cloudsmithKey = project.hasProperty("cloudsmithApiKey") ? project.property("cloudsmithApiKey") : System.getenv("CLOUDSMITH_API_KEY")
+
+publishing {
+    repositories {
+        maven {
+            name = "cloudsmith"
+            url = "https://api-g.cloudsmith.io/maven/consensys/maven/"
+            credentials {
+                username = cloudsmithUser
+                password = cloudsmithKey
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            groupId "tech.pegasys"
+            version project.version
+            from components.java
+            artifact sourcesJar
+
+            versionMapping {
+                usage("java-api") { fromResolutionOf("runtimeClasspath") }
+                usage("java-runtime") { fromResolutionResult() }
+            }
+            pom {
+                name = "${project.name}"
+                url = "http://github.com/ConsenSys/jc-kzg-4844"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/ConsenSys/jc-kzg-4844.git"
+                    developerConnection = "scm:git:ssh://github.com/ConsenSys/jc-kzg-4844.git"
+                    url = "https://github.com/ConsenSys/jc-kzg-4844"
+                }
+            }
+        }
+    }
+}
+
+// Calculate the version that this build would be published under (if it is published)
+// If this exact commit is tagged, use the tag
+// If this is on a release-* branch, use the most recent tag appended with +develop (e.g. 0.1.1-RC1+develop)
+// Otherwise, use develop
+def calculatePublishVersion() {
+    if (!grgit.head()) {
+        return "UNKNOWN"
+    }
+    def specificVersion = calculateVersion()
+    def isReleaseBranch = grgit.branch.current().name.startsWith("release-")
+    if (specificVersion.contains("+")) {
+        return isReleaseBranch ? "${specificVersion.substring(0, specificVersion.indexOf("+"))}+develop" : "develop"
+    }
+    return specificVersion
+}
+
+// If this exact commit is tagged, use the tag
+// Otherwise use git describe --tags and replace the - after the tag with a +
+def calculateVersion() {
+    if (!grgit) {
+        return "UNKNOWN"
+    }
+    String version = grgit.describe(tags: true)
+    if (version == null) {
+        return "UNKNOWN"
+    }
+    def versionPattern = ~/^(?<lastVersion>.*)-(?<devVersion>[0-9]+-g[a-z0-9]+)$/
+    def matcher = version =~ versionPattern
+    if (matcher.find()) {
+        return "${matcher.group("lastVersion")}+${matcher.group("devVersion")}"
+    }
+    return version
+}
+
+task checkJarContents() {
+    doLast {
+        exec {
+            executable project.file("src/test/bash/checkResources.sh")
+            args "${project.jar.outputs.files.getFiles()[0]}"
+        }
+    }
+}
