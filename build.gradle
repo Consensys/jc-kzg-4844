@@ -19,7 +19,7 @@ gitVersioning.apply {
         }
     }
     rev {
-        version = "develop-\${commit.short}"
+        version = "develop"
     }
 }
 
