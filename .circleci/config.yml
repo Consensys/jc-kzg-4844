@@ -18,16 +18,14 @@ executors:
 
   mac_os_executor:
     macos:
-      xcode: "12.5.0"
-    resource_class: medium
+      xcode: "13.4.1"
     working_directory: ~/jc-kzg-4844
     environment:
       GRADLE_OPTS: -Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
-      HOMEBREW_NO_AUTO_UPDATE: true
 
 commands:
   checkout_code:
-    description: "Prepare - Checkout code"
+    description: "Checkout code"
     steps:
       - checkout
       - run:
@@ -39,6 +37,7 @@ commands:
     description: "Build C-KZG-4844"
     steps:
       - run:
+          name: "Build C-KZG-4844"
           command: |
             cd c-kzg-4844/src
             make blst
@@ -48,6 +47,7 @@ commands:
     description: "Build Java binding"
     steps:
       - run:
+          name: "Build Java binding"
           command: |
             cd c-kzg-4844/bindings/java
             make build
@@ -59,6 +59,11 @@ jobs:
       SKIP_GRADLE: true
     steps:
       - checkout_code
+      - run:
+          name: "Install dependencies"
+          command: |
+            sudo apt-get update
+            sudo apt-get install clang
       - build_c_kzg_4844
       - build_java_binding
       - persist_to_workspace:
@@ -85,8 +90,22 @@ jobs:
       SKIP_GRADLE: true
     steps:
       - checkout_code
-      - build_c_kzg_4844
-      - build_java_binding
+      - run:
+          name: "Install dependencies"
+          command: |
+            choco install make
+            choco install mingw
+      - run:
+          name: "Build C-KZG-4844"
+          command: |
+            cd c-kzg-4844/src
+            make blst
+            make CLANG_EXECUTABLE=gcc lib
+      - run:
+          name: "Build Java binding"
+          command: |
+            cd c-kzg-4844/bindings/java
+            make CLANG_EXECUTABLE=gcc build
       - persist_to_workspace:
           root: ./
           paths:
@@ -95,11 +114,11 @@ jobs:
   assemble:
     executor: linux_executor
     steps:
-      - checkout
+      - checkout_code
       - attach_workspace:
           at: ~/jc-kzg-4844
       - run:
-          name: Copy C-KZG-4844 Sources
+          name: "Copy generated sources"
           command: |
 
             cd c-kzg-4844/bindings/java/
@@ -111,21 +130,21 @@ jobs:
             
             cp src/main/java/ethereum/ckzg4844/*.java $SRCDIR
             
-            LIBDIR="src/main/resources/ethereum/ckzg4844/lib/"
+            LIBDIR="src/main/resources/ethereum/ckzg4844/lib"
             
-            cp "$LIBDIR/*.dll" $RESOURCEDIR
-            cp "$LIBDIR/*.so" $RESOURCEDIR
-            cp "$LIBDIR/*.dylib" $RESOURCEDIR
+            cp $LIBDIR/*.dll $RESOURCEDIR
+            cp $LIBDIR/*.so $RESOURCEDIR
+            cp $LIBDIR/*.dylib $RESOURCEDIR
 
       - run:
-          name: Build Jar
+          name: "Build Jar"
           command: |
             ./gradlew --no-daemon --parallel build
 
       - run:
-          name: Check Jar
+          name: "Check Jar"
           command: |
-            ./gradlew --no-daemon checkJarContents
+            ./gradlew --no-daemon --info checkJarContents
 
       - persist_to_workspace:
           root: .
@@ -133,7 +152,7 @@ jobs:
             - ./
 
       - store_artifacts:
-          name: Store Jar
+          name: "Store Jar"
           path: build/libs
 
   publish:
@@ -143,7 +162,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Publish
+          name: "Publish"
           command: |
             ./gradlew --no-daemon --parallel checkJarContents publish
 
@@ -188,7 +207,6 @@ workflows:
             branches:
               only:
                 - master
-                - /^release-.*/
           context:
             - quorum-gradle
             - dockerhub-quorumengineering-ro

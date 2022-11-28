@@ -5,6 +5,8 @@
 
 Java wrapper around [C-KZG-4844](https://github.com/ethereum/c-kzg-4844)
 
+⚠️ This project is still WIP.
+
 # Dependency
 
 ```groovy
