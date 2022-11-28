@@ -25,7 +25,7 @@ executors:
 
 commands:
   checkout_code:
-    description: "Prepare - Checkout code"
+    description: "Checkout code"
     steps:
       - checkout
       - run:
@@ -37,6 +37,7 @@ commands:
     description: "Build C-KZG-4844"
     steps:
       - run:
+          name: "Build C-KZG-4844"
           command: |
             cd c-kzg-4844/src
             make blst
@@ -46,6 +47,7 @@ commands:
     description: "Build Java binding"
     steps:
       - run:
+          name: "Build Java binding"
           command: |
             cd c-kzg-4844/bindings/java
             make build
@@ -116,7 +118,7 @@ jobs:
       - attach_workspace:
           at: ~/jc-kzg-4844
       - run:
-          name: Copy C-KZG-4844 Sources
+          name: "Copy C-KZG-4844 Sources"
           command: |
 
             cd c-kzg-4844/bindings/java/
@@ -135,12 +137,12 @@ jobs:
             cp $LIBDIR/*.dylib $RESOURCEDIR
 
       - run:
-          name: Build Jar
+          name: "Build Jar"
           command: |
             ./gradlew --no-daemon --parallel build
 
       - run:
-          name: Check Jar
+          name: "Check Jar"
           command: |
             ./gradlew --no-daemon --info checkJarContents
 
@@ -150,7 +152,7 @@ jobs:
             - ./
 
       - store_artifacts:
-          name: Store Jar
+          name: "Store Jar"
           path: build/libs
 
   publish:
@@ -160,7 +162,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Publish
+          name: "Publish"
           command: |
             ./gradlew --no-daemon --parallel checkJarContents publish
 
