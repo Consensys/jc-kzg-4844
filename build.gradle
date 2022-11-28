@@ -1,30 +1,21 @@
 plugins {
+    id "java"
     id "maven-publish"
     id "org.ajoberstar.grgit" version "5.0.0"
 }
-
-rootProject.version = calculatePublishVersion()
-
-apply plugin: "java"
-apply plugin: "maven-publish"
-
-group = "tech.pegasys"
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 repositories {
     mavenCentral()
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set("sources")
-    from sourceSets.main.allSource
-}
+group = "tech.pegasys"
+rootProject.version = calculatePublishVersion()
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set("javadoc")
-    from javadoc.destinationDir
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withSourcesJar()
+    withJavadocJar()
 }
 
 def cloudsmithUser = project.hasProperty("cloudsmithUser") ? project.property("cloudsmithUser") : System.getenv("CLOUDSMITH_USER")
@@ -43,10 +34,9 @@ publishing {
     }
     publications {
         mavenJava(MavenPublication) {
-            groupId "tech.pegasys"
+            groupId project.group
             version project.version
             from components.java
-            artifact sourcesJar
 
             versionMapping {
                 usage("java-api") { fromResolutionOf("runtimeClasspath") }
@@ -55,6 +45,7 @@ publishing {
             pom {
                 name = "${project.name}"
                 url = "http://github.com/ConsenSys/jc-kzg-4844"
+                description = "Java wrapper around C-KZG-4844"
                 licenses {
                     license {
                         name = "The Apache License, Version 2.0"

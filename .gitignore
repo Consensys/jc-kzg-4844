@@ -3,3 +3,5 @@ build/
 bin/
 .idea/
 .iml
+# copied files during jar assembling
+src/main/**/ethereum/ckzg4844/
