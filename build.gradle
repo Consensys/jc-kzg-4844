@@ -14,8 +14,8 @@ version = "develop"
 
 gitVersioning.apply {
     refs {
-        tag("(?<version>.*)") {
-            version = "\${ref.version}"
+        tag(".+") {
+            version = "\${ref}"
         }
         branch("master") {
             version = "develop"
