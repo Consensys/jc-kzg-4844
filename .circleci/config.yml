@@ -207,7 +207,6 @@ workflows:
             branches:
               only:
                 - master
-                - /^release-.*/
           context:
             - quorum-gradle
             - dockerhub-quorumengineering-ro
