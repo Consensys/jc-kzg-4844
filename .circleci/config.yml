@@ -118,7 +118,7 @@ jobs:
       - attach_workspace:
           at: ~/jc-kzg-4844
       - run:
-          name: "Copy C-KZG-4844 Sources"
+          name: "Copy generated sources"
           command: |
 
             cd c-kzg-4844/bindings/java/
