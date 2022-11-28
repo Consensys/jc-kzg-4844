@@ -112,7 +112,7 @@ jobs:
   assemble:
     executor: linux_executor
     steps:
-      - checkout
+      - checkout_code
       - attach_workspace:
           at: ~/jc-kzg-4844
       - run:
