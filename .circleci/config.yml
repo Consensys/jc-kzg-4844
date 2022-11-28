@@ -92,6 +92,7 @@ jobs:
           name: "Install dependencies"
           command: |
             choco install make
+            choco install mingw
       - build_c_kzg_4844
       - run:
           name: "Build Java binding"
