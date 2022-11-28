@@ -142,7 +142,7 @@ jobs:
       - run:
           name: Check Jar
           command: |
-            ./gradlew --no-daemon checkJarContents
+            ./gradlew --no-daemon --debug checkJarContents
 
       - persist_to_workspace:
           root: .
