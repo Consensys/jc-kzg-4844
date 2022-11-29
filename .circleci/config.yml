@@ -135,10 +135,9 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            java --version
             cd c-kzg-4844/bindings/java
             make CLANG_EXECUTABLE=gcc build
-            ./gradlew.bat clean test
+            ./gradlew clean test
       - persist_to_workspace:
           root: ./
           paths:
