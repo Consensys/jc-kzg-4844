@@ -127,9 +127,8 @@ jobs:
       - run:
           name: "Install dependencies"
           command: |
-            winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="2048"}'
-            choco install make
-            choco install mingw
+            choco install -y make
+            choco install -y mingw
       - run:
           name: "Build C-KZG-4844"
           command: |
