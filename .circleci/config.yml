@@ -124,11 +124,11 @@ jobs:
     executor: win/default
     steps:
       - checkout_code
-      - run:
-          name: "Install dependencies"
-          command: |
-            choco install make
-            choco install mingw
+#      - run:
+#          name: "Install dependencies"
+#          command: |
+#            choco install make
+#            choco install mingw
       - run:
           name: "Build C-KZG-4844"
           command: |
