@@ -124,11 +124,12 @@ jobs:
     executor: win/default
     steps:
       - checkout_code
-#      - run:
-#          name: "Install dependencies"
-#          command: |
-#            choco install make
-#            choco install mingw
+      - run:
+          name: "Install dependencies"
+          command: |
+            winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="2048"}'
+            choco install make
+            choco install mingw
       - run:
           name: "Build C-KZG-4844"
           command: |
@@ -136,7 +137,7 @@ jobs:
             make blst
             make CLANG_EXECUTABLE=gcc lib
       - run:
-          shell: bash.exe
+          shell: /bin/bash
           name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
