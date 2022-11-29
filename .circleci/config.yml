@@ -33,30 +33,9 @@ commands:
           command: |
             git submodule update --init --recursive
 
-  build_c_kzg_4844:
-    description: "Build C-KZG-4844"
-    steps:
-      - run:
-          name: "Build C-KZG-4844"
-          command: |
-            cd c-kzg-4844/src
-            make blst
-            make lib
-
-  build_java_binding:
-    description: "Build Java binding"
-    steps:
-      - run:
-          name: "Build Java binding"
-          command: |
-            cd c-kzg-4844/bindings/java
-            make build
-
 jobs:
   x86-64-linux-build:
     executor: linux_executor
-    environment:
-      SKIP_GRADLE: true
     steps:
       - checkout_code
       - run:
@@ -64,30 +43,85 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install clang
-      - build_c_kzg_4844
-      - build_java_binding
+      - run:
+          name: "Build C-KZG-4844"
+          command: |
+            cd c-kzg-4844/src
+            make blst
+            make lib
+      - run:
+          name: "Build and test java binding"
+          command: |
+            cd c-kzg-4844/bindings/java
+            make build test
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.so
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+
+  arm64-linux-build:
+    executor: linux_executor
+    environment:
+      - DOCKER_IMAGE=arm64v8/debian:buster
+      - CONTAINER_DISTRO=debian:buster
+      - PKG_RELEASE=buster
+      - PKG_DISTRO=debian
+      - EMU=on
+    steps:
+      - checkout_code
+      - run:
+          name: "Install dependencies"
+          command: |
+            sudo apt-get update
+            sudo apt-get install clang
+            sudo apt-get install gcc-multilib g++-multilib
+            sudo apt-get install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu g++-aarch64-linux-gnu
+      - run:
+          name: "Build C-KZG-4844"
+          command: |
+            cd c-kzg-4844/src
+            make CROSS_COMPILE="aarch64-linux-gnu-" CXX="aarch64-linux-gnu-g++" blst
+            make CLANG_EXECUTABLE=aarch64-linux-gnu-gcc lib
+      - run:
+          name: "Build java binding"
+          command: |
+            clang --version
+            cd c-kzg-4844/bindings/java
+            make CLANG_EXECUTABLE=aarch64-linux-gnu-gcc OS_ARCH=aarch64 build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
 
   mac-os-build:
     executor: mac_os_executor
-    environment:
-      SKIP_GRADLE: true
     steps:
       - checkout_code
-      - build_c_kzg_4844
-      - build_java_binding
+      - run:
+          name: "Build C-KZG-4844"
+          command: |
+            cd c-kzg-4844/src
+            make blst
+            make lib
+      - run:
+          name: "Build and test java binding"
+          command: |
+            cd c-kzg-4844/bindings/java
+            make build test
+            echo "Building for aarch64. Have to rebuild C-KZG-4844."
+            cd ../../src
+            make CC="cc -arch arm64" blst -B
+            make CFLAGS="-O2 -fPIC -target arm64-apple-macos" lib -B
+            cd ../bindings/java
+            make CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64 build -B
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.dylib
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
 
   windows-build:
     executor: win/default
-    environment:
-      SKIP_GRADLE: true
     steps:
       - checkout_code
       - run:
@@ -102,14 +136,16 @@ jobs:
             make blst
             make CLANG_EXECUTABLE=gcc lib
       - run:
-          name: "Build Java binding"
+          shell: bash.exe
+          name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
             make CLANG_EXECUTABLE=gcc build
+            ./gradlew.bat clean test
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/*.dll
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
 
   assemble:
     executor: linux_executor
@@ -132,9 +168,9 @@ jobs:
             
             LIBDIR="src/main/resources/ethereum/ckzg4844/lib"
             
-            cp $LIBDIR/*.dll $RESOURCEDIR
-            cp $LIBDIR/*.so $RESOURCEDIR
-            cp $LIBDIR/*.dylib $RESOURCEDIR
+            cp -R $LIBDIR/amd64 $RESOURCEDIR
+            cp -R $LIBDIR/x86_64 $RESOURCEDIR
+            cp -R $LIBDIR/aarch64 $RESOURCEDIR
 
       - run:
           name: "Build Jar"
@@ -176,6 +212,12 @@ workflows:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/
           context:
             - dockerhub-quorumengineering-ro
+      - arm64-linux-build:
+          filters:
+            tags:
+              <<: *filters-release-tags
+          context:
+            - dockerhub-quorumengineering-ro
       - mac-os-build:
           filters:
             tags:
@@ -191,6 +233,7 @@ workflows:
       - assemble:
           requires:
             - x86-64-linux-build
+            - arm64-linux-build
             - mac-os-build
             - windows-build
           filters:
