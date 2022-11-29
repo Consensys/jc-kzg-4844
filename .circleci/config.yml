@@ -136,7 +136,7 @@ jobs:
             make blst
             make CLANG_EXECUTABLE=gcc lib
       - run:
-          shell: /bin/bash
+          shell: bash.exe
           name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
