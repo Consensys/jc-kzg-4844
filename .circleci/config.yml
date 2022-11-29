@@ -137,6 +137,7 @@ jobs:
           command: |
             cd c-kzg-4844/bindings/java
             make CLANG_EXECUTABLE=gcc build
+            ./gradlew wrapper --gradle-version 7.6
             ./gradlew clean test
       - persist_to_workspace:
           root: ./
