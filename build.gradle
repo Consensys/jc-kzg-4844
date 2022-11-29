@@ -10,7 +10,7 @@ repositories {
 
 group = "tech.pegasys"
 
-version = "develop"
+version = "UNKNOWN"
 
 gitVersioning.apply {
     refs {
@@ -20,9 +20,12 @@ gitVersioning.apply {
         branch("master") {
             version = "develop"
         }
+        branch(".+") {
+            version = "\${ref}"
+        }
     }
     rev {
-        version = "develop-\${commit.short}"
+        version = "UNKNOWN"
     }
 }
 
@@ -32,12 +35,12 @@ java {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     from javadoc.destinationDir
 }
 
@@ -46,17 +49,14 @@ artifacts {
     archives javadocJar
 }
 
-def cloudsmithUser = project.hasProperty("cloudsmithUser") ? project.property("cloudsmithUser") : System.getenv("CLOUDSMITH_USER")
-def cloudsmithKey = project.hasProperty("cloudsmithApiKey") ? project.property("cloudsmithApiKey") : System.getenv("CLOUDSMITH_API_KEY")
-
 publishing {
     repositories {
         maven {
             name = "cloudsmith"
             url = "https://api-g.cloudsmith.io/maven/consensys/maven/"
             credentials {
-                username = cloudsmithUser
-                password = cloudsmithKey
+                username = System.getenv("CLOUDSMITH_USER")
+                password = System.getenv("CLOUDSMITH_API_KEY")
             }
         }
     }
