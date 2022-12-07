@@ -6,12 +6,17 @@ JAR=${1:?Must specify path to an already built jc-kzg-4844 jar file}
 
 CONTENTS=$(jar tvf ${JAR})
 
-EXPECTED="ethereum/ckzg4844/CKzg4844JNI.class
-ethereum/ckzg4844/lib/amd64/libckzg4844jni.so
-ethereum/ckzg4844/lib/aarch64/libckzg4844jni.so
-ethereum/ckzg4844/lib/amd64/ckzg4844jni.dll
-ethereum/ckzg4844/lib/x86_64/libckzg4844jni.dylib
-ethereum/ckzg4844/lib/aarch64/libckzg4844jni.dylib"
+EXPECTED="ethereum/ckzg4844/CKZG4844JNI.class
+ethereum/ckzg4844/lib/amd64/mainnet/libckzg4844jni.so
+ethereum/ckzg4844/lib/aarch64/mainnet/libckzg4844jni.so
+ethereum/ckzg4844/lib/amd64/mainnet/ckzg4844jni.dll
+ethereum/ckzg4844/lib/x86_64/mainnet/libckzg4844jni.dylib
+ethereum/ckzg4844/lib/aarch64/mainnet/libckzg4844jni.dylib
+ethereum/ckzg4844/lib/amd64/minimal/libckzg4844jni.so
+ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.so
+ethereum/ckzg4844/lib/amd64/minimal/ckzg4844jni.dll
+ethereum/ckzg4844/lib/x86_64/minimal/libckzg4844jni.dylib
+ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.dylib"
 
 EXIT_CODE=0
 

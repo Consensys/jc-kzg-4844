@@ -22,15 +22,17 @@ dependencies {
 # Minimal Sample
 
 ```java
-CKzg4844JNI.loadTrustedSetup("trusted-setup.txt");
+CKZG4844JNI.loadNativeLibrary(Preset.MAINNET);
+
+CKZG4844JNI.loadTrustedSetup("trusted-setup.txt");
 
 byte[] blob = ...;
-byte[] commitment = CKzg4844JNI.blobToKzgCommitment(blob);
-byte[] proof = CKzg4844JNI.computeAggregateKzgProof(blob, 1);
+byte[] commitment = CKZG4844JNI.blobToKzgCommitment(blob);
+byte[] proof = CKZG4844JNI.computeAggregateKzgProof(blob, 1);
 
-boolean isValidProof = CKzg4844JNI.verifyAggregateKzgProof(blob, commitment, 1, proof);
+boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob, commitment, 1, proof);
 
-CKzg4844JNI.freeTrustedSetup();
+CKZG4844JNI.freeTrustedSetup();
 ```
 
 # Supported platforms

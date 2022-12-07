@@ -13,15 +13,17 @@ executors:
           password: $DOCKER_PASSWORD_RO
     resource_class: medium
     working_directory: ~/jc-kzg-4844
-    environment:
-      GRADLE_OPTS: -Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
+
+  linux_executor_arm64:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: arm.medium
+    working_directory: ~/jc-kzg-4844
 
   mac_os_executor:
     macos:
       xcode: "13.4.1"
     working_directory: ~/jc-kzg-4844
-    environment:
-      GRADLE_OPTS: -Xmx2048m -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
 
 commands:
   checkout_code:
@@ -30,8 +32,29 @@ commands:
       - checkout
       - run:
           name: "Pull Submodules"
+          command: git submodule update --init --recursive
+  build_blst:
+    parameters:
+      make_env:
+        default: ""
+        type: string
+    steps:
+      - run:
+          name: "Build blst"
           command: |
-            git submodule update --init --recursive
+            cd c-kzg-4844/src
+            make << parameters.make_env >> blst -B
+  build_and_test_java_binding:
+    parameters:
+      make_env:
+        default: ""
+        type: string
+    steps:
+      - run:
+          name: "Build and test java binding"
+          command: |
+            cd c-kzg-4844/bindings/java
+            make << parameters.make_env >> build test -B
 
 jobs:
   x86-64-linux-build:
@@ -43,82 +66,61 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install clang
-      - run:
-          name: "Build C-KZG-4844"
-          command: |
-            cd c-kzg-4844/src
-            make blst
-            make lib
-      - run:
-          name: "Build and test java binding"
-          command: |
-            cd c-kzg-4844/bindings/java
-            make build test
+      - build_blst
+      - build_and_test_java_binding
+      - build_and_test_java_binding:
+          make_env: "PRESET=minimal"
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/mainnet
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/minimal
 
   arm64-linux-build:
-    executor: linux_executor
+    executor: linux_executor_arm64
     environment:
-      - DOCKER_IMAGE=arm64v8/debian:buster
-      - CONTAINER_DISTRO=debian:buster
-      - PKG_RELEASE=buster
-      - PKG_DISTRO=debian
-      - EMU=on
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-arm64
     steps:
       - checkout_code
       - run:
           name: "Install dependencies"
           command: |
             sudo apt-get update
-            sudo apt-get install clang
-            sudo apt-get install gcc-multilib g++-multilib
-            sudo apt-get install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu g++-aarch64-linux-gnu
-      - run:
-          name: "Build C-KZG-4844"
-          command: |
-            cd c-kzg-4844/src
-            make CROSS_COMPILE="aarch64-linux-gnu-" CXX="aarch64-linux-gnu-g++" blst
-            make CLANG_EXECUTABLE=aarch64-linux-gnu-gcc lib
-      - run:
-          name: "Build java binding"
-          command: |
-            clang --version
-            cd c-kzg-4844/bindings/java
-            make CLANG_EXECUTABLE=aarch64-linux-gnu-gcc OS_ARCH=aarch64 build
+            sudo apt-get install openjdk-11-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-arm64/bin/javac
+      - build_blst
+      - build_and_test_java_binding:
+          make_env: "OS_ARCH=aarch64"
+      - build_and_test_java_binding:
+          make_env: "OS_ARCH=aarch64 PRESET=minimal"
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/mainnet
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/minimal
 
   mac-os-build:
     executor: mac_os_executor
     steps:
       - checkout_code
-      - run:
-          name: "Build C-KZG-4844"
-          command: |
-            cd c-kzg-4844/src
-            make blst
-            make lib
-      - run:
-          name: "Build and test java binding"
-          command: |
-            cd c-kzg-4844/bindings/java
-            make build test
-            echo "Building for aarch64. Have to rebuild C-KZG-4844."
-            cd ../../src
-            make CC="cc -arch arm64" blst -B
-            make CFLAGS="-O2 -fPIC -target arm64-apple-macos" lib -B
-            cd ../bindings/java
-            make CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64 build -B
+      - build_blst
+      - build_and_test_java_binding
+      - build_and_test_java_binding:
+          make_env: "PRESET=minimal"
+      - build_blst:
+          make_env: 'CC="cc -arch arm64"'
+      - build_and_test_java_binding:
+          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
+      - build_and_test_java_binding:
+          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64 PRESET=minimal'
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64/mainnet
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/mainnet
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64/minimal
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/minimal
 
   windows-build:
     executor: win/default
@@ -129,23 +131,24 @@ jobs:
           command: |
             choco install make
             choco install mingw
-      - run:
-          name: "Build C-KZG-4844"
-          command: |
-            cd c-kzg-4844/src
-            make blst
-            make CLANG_EXECUTABLE=gcc lib
+      - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
+            echo "Building and testing for mainnet preset"
             cd c-kzg-4844/bindings/java
-            make CLANG_EXECUTABLE=gcc build
+            make build -B
+            ./gradlew.bat clean test
+            echo "Building and testing for minimal preset"
+            export PRESET=minimal
+            make build -B
             ./gradlew.bat clean test
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/mainnet
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/minimal
 
   assemble:
     executor: linux_executor
@@ -154,23 +157,19 @@ jobs:
       - attach_workspace:
           at: ~/jc-kzg-4844
       - run:
-          name: "Copy generated sources"
+          name: "Copy java classes and generated libraries"
           command: |
 
             cd c-kzg-4844/bindings/java/
             
             SRCDIR="../../../src/main/java/ethereum/ckzg4844"
-            RESOURCEDIR="../../../src/main/resources/ethereum/ckzg4844/lib"
+            RESOURCEDIR="../../../src/main/resources/ethereum/ckzg4844"
             
             mkdir -p $SRCDIR $RESOURCEDIR
             
             cp src/main/java/ethereum/ckzg4844/*.java $SRCDIR
             
-            LIBDIR="src/main/resources/ethereum/ckzg4844/lib"
-            
-            cp -R $LIBDIR/amd64 $RESOURCEDIR
-            cp -R $LIBDIR/x86_64 $RESOURCEDIR
-            cp -R $LIBDIR/aarch64 $RESOURCEDIR
+            cp -R src/main/resources/ethereum/ckzg4844/lib $RESOURCEDIR
 
       - run:
           name: "Build Jar"
