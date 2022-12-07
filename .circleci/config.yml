@@ -67,7 +67,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install clang
       - build_blst
-      - build_and_test_java_binding
+      - build_and_test_java_binding:
+          make_env: "PRESET=mainnet"
       - build_and_test_java_binding:
           make_env: "PRESET=minimal"
       - persist_to_workspace:
@@ -92,9 +93,9 @@ jobs:
             sudo apt-get install clang-9
       - build_blst
       - build_and_test_java_binding:
-          make_env: "CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64"
+          make_env: "PRESET=mainnet CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64"
       - build_and_test_java_binding:
-          make_env: "CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64 PRESET=minimal"
+          make_env: "PRESET=minimal CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64"
       - persist_to_workspace:
           root: ./
           paths:
@@ -106,15 +107,16 @@ jobs:
     steps:
       - checkout_code
       - build_blst
-      - build_and_test_java_binding
+      - build_and_test_java_binding:
+          make_env: "PRESET=mainnet"
       - build_and_test_java_binding:
           make_env: "PRESET=minimal"
       - build_blst:
           make_env: 'CC="cc -arch arm64"'
       - build_and_test_java_binding:
-          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
+          make_env: 'PRESET=mainnet CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
       - build_and_test_java_binding:
-          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64 PRESET=minimal'
+          make_env: 'PRESET=minimal CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
       - persist_to_workspace:
           root: ./
           paths:
@@ -137,12 +139,10 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            echo "Building and testing for mainnet preset"
             export PRESET=mainnet
             cd c-kzg-4844/bindings/java
             make build -B
             ./gradlew.bat clean test
-            echo "Building and testing for minimal preset"
             export PRESET=minimal
             make build -B
             ./gradlew.bat clean test
