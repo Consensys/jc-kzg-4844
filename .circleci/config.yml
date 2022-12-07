@@ -138,6 +138,7 @@ jobs:
           name: "Build and test java binding"
           command: |
             echo "Building and testing for mainnet preset"
+            export PRESET=mainnet
             cd c-kzg-4844/bindings/java
             make build -B
             ./gradlew.bat clean test
