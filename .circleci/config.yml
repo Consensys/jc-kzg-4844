@@ -89,6 +89,8 @@ jobs:
             sudo apt-get install openjdk-11-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-arm64/bin/javac
+            sudo apt-get install clang-9
+            clang-9 --version
       - build_blst
       - build_and_test_java_binding:
           make_env: "OS_ARCH=aarch64"
