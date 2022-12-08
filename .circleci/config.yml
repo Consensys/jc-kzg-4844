@@ -90,12 +90,12 @@ jobs:
             sudo apt-get install openjdk-11-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-arm64/bin/javac
-            sudo apt-get install clang-9
+            sudo apt-get install clang
       - build_blst
       - build_and_test_java_binding:
-          make_env: "PRESET=mainnet CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64"
+          make_env: "PRESET=mainnet OS_ARCH=aarch64"
       - build_and_test_java_binding:
-          make_env: "PRESET=minimal CLANG_EXECUTABLE=clang-9 OS_ARCH=aarch64"
+          make_env: "PRESET=minimal OS_ARCH=aarch64"
       - persist_to_workspace:
           root: ./
           paths:
