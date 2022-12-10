@@ -2,12 +2,12 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@2.2.0
+  win: circleci/windows@5.0.0
 
 executors:
   linux_executor:
     docker:
-      - image: circleci/openjdk:11.0.4-jdk-stretch
+      - image: circleci/openjdk:11.0.6-jdk-stretch
         auth:
           username: $DOCKER_USER_RO
           password: $DOCKER_PASSWORD_RO
@@ -22,7 +22,7 @@ executors:
 
   mac_os_executor:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.1.0"
     working_directory: ~/jc-kzg-4844
 
 commands:
@@ -132,15 +132,15 @@ jobs:
       - run:
           name: "Install dependencies"
           command: |
-            choco install make
-            choco install mingw
+            choco install make -y
+            choco install mingw -y
       - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            export PRESET=mainnet
             cd c-kzg-4844/bindings/java
+            export PRESET=mainnet
             make build -B
             ./gradlew.bat clean test
             export PRESET=minimal
