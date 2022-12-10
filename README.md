@@ -23,19 +23,19 @@ dependencies {
 ## Minimal sample
 
 ```java
-// load once at startup
+// load the library once at startup
 CKZG4844JNI.loadNativeLibrary(Preset.MAINNET);
 
-// once loaded, all methods will use this trusted setup
+// once a trusted setup is loaded, all methods will use it
 CKZG4844JNI.loadTrustedSetup("trusted-setup.txt");
 
 byte[] blob = ...;
 byte[] commitment = CKZG4844JNI.blobToKzgCommitment(blob);
-byte[] proof = CKZG4844JNI.computeAggregateKzgProof(blob,1);
+byte[] proof = CKZG4844JNI.computeAggregateKzgProof(blob, 1);
 
-boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob,commitment,1,proof);
+boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob, commitment, 1, proof);
 
-// this method should be called first if a different trusted setup needs to be loaded
+// the current trusted setup should be freed, before a new one is loaded
 CKZG4844JNI.freeTrustedSetup();
 ```
 
