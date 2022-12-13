@@ -37,6 +37,7 @@ done
 # check there are no other unexpected files in the jar
 if [[ $EXIT_CODE -eq 0 ]]; then
   echo -n "Checking if the count of the files in the jar is ${EXPECTED_TOTAL_FILES}"
+  # exclude directories and the manifest file
   TOTAL_FILES=$(echo "${CONTENTS}" | grep -Ecv "(/|MANIFEST.MF)$")
   if [ "$TOTAL_FILES" -ne $EXPECTED_TOTAL_FILES ]; then
     echo -n "Number of files in the jar is ${TOTAL_FILES}"
