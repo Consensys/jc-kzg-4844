@@ -7,10 +7,7 @@ orbs:
 executors:
   linux_executor:
     docker:
-      - image: circleci/openjdk:11.0.6-jdk-stretch
-        auth:
-          username: $DOCKER_USER_RO
-          password: $DOCKER_PASSWORD_RO
+      - image: cimg/openjdk:11.0.17
     resource_class: medium
     working_directory: ~/jc-kzg-4844
 
@@ -211,26 +208,18 @@ workflows:
           filters:
             tags: &filters-release-tags
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/
-          context:
-            - dockerhub-quorumengineering-ro
       - arm64-linux-build:
           filters:
             tags:
               <<: *filters-release-tags
-          context:
-            - dockerhub-quorumengineering-ro
       - mac-os-build:
           filters:
             tags:
               <<: *filters-release-tags
-          context:
-            - dockerhub-quorumengineering-ro
       - windows-build:
           filters:
             tags:
               <<: *filters-release-tags
-          context:
-            - dockerhub-quorumengineering-ro
       - assemble:
           requires:
             - x86-64-linux-build
@@ -240,8 +229,6 @@ workflows:
           filters:
             tags:
               <<: *filters-release-tags
-          context:
-            - dockerhub-quorumengineering-ro
       - publish:
           requires:
             - assemble
@@ -253,4 +240,3 @@ workflows:
                 - master
           context:
             - cloudsmith-protocols
-            - dockerhub-quorumengineering-ro
