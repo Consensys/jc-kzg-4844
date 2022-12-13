@@ -21,7 +21,7 @@ ethereum/ckzg4844/lib/amd64/minimal/ckzg4844jni.dll
 ethereum/ckzg4844/lib/x86_64/minimal/libckzg4844jni.dylib
 ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.dylib"
 
-EXPECTED_TOTAL_FILES=12
+EXPECTED_TOTAL_FILES=$(echo "${EXPECTED}" | wc -l)
 
 EXIT_CODE=0
 
@@ -38,7 +38,7 @@ done
 if [[ $EXIT_CODE -eq 0 ]]; then
   # exclude directories and the manifest file
   TOTAL_FILES=$(echo "${CONTENTS}" | grep -Ecv "(/|MANIFEST.MF)$")
-  if [ "$TOTAL_FILES" -ne $EXPECTED_TOTAL_FILES ]; then
+  if [ "$TOTAL_FILES" -ne "$EXPECTED_TOTAL_FILES" ]; then
     echo -e "Expected number of files in the jar to be ${EXPECTED_TOTAL_FILES}, but it was ${TOTAL_FILES}."
     EXIT_CODE=1
   fi
