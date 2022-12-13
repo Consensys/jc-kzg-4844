@@ -6,7 +6,7 @@
 
 Java wrapper around [C-KZG-4844](https://github.com/ethereum/c-kzg-4844)
 
-⚠️ This project is still WIP.
+🚧 This project is still WIP.
 
 ## Dependency
 
@@ -35,7 +35,7 @@ byte[] proof = CKZG4844JNI.computeAggregateKzgProof(blob, 1);
 
 boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob, commitment, 1, proof);
 
-// the current trusted setup should be freed, before a new one is loaded
+// the current trusted setup should be freed before a new one is loaded
 CKZG4844JNI.freeTrustedSetup();
 ```
 
