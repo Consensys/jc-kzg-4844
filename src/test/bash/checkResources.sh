@@ -2,9 +2,11 @@
 
 set -euo pipefail
 
+export PATH="$JAVA_HOME/bin:$PATH"
+
 JAR=${1:?Must specify path to an already built jc-kzg-4844 jar file}
 
-CONTENTS=$(jar tvf ${JAR})
+CONTENTS=$(jar tvf "${JAR}")
 
 EXPECTED="ethereum/ckzg4844/CKZG4844JNI.class
 ethereum/ckzg4844/lib/amd64/mainnet/libckzg4844jni.so

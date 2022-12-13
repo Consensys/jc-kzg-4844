@@ -8,9 +8,6 @@ executors:
   linux_executor:
     docker:
       - image: cimg/openjdk:11.0.17
-        auth:
-          username: $DOCKER_USER_RO
-          password: $DOCKER_PASSWORD_RO
     resource_class: medium
     working_directory: ~/jc-kzg-4844
 
@@ -211,8 +208,6 @@ workflows:
           filters:
             tags: &filters-release-tags
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/
-          context:
-            - dockerhub-quorumengineering-ro
       - arm64-linux-build:
           filters:
             tags:
@@ -234,8 +229,6 @@ workflows:
           filters:
             tags:
               <<: *filters-release-tags
-          context:
-            - dockerhub-quorumengineering-ro
       - publish:
           requires:
             - assemble
@@ -246,5 +239,4 @@ workflows:
               only:
                 - master
           context:
-            - dockerhub-quorumengineering-ro
             - cloudsmith-protocols
