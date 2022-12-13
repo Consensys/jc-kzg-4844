@@ -20,6 +20,8 @@ ethereum/ckzg4844/lib/amd64/minimal/ckzg4844jni.dll
 ethereum/ckzg4844/lib/x86_64/minimal/libckzg4844jni.dylib
 ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.dylib"
 
+EXPECTED_TOTAL_FILES=11
+
 EXIT_CODE=0
 
 for LIB in $EXPECTED; do
@@ -31,5 +33,15 @@ for LIB in $EXPECTED; do
     EXIT_CODE=1
   fi
 done
+
+# check there are no other unexpected files in the jar
+if [[ $EXIT_CODE -eq 0 ]]; then
+  TOTAL_FILES=$(echo "${CONTENTS}" | grep -Ecv "(/|MANIFEST.MF)$")
+ó
+  if [ "$TOTAL_FILES" -ne $EXPECTED_TOTAL_FILES ]; then
+    echo "Expected total number of files in the jar to be ${EXPECTED_TOTAL_FILES}, but it was ${TOTAL_FILES}"
+    EXIT_CODE=1
+  fi
+fi
 
 exit $EXIT_CODE
