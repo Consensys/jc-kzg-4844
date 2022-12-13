@@ -37,7 +37,6 @@ done
 # check there are no other unexpected files in the jar
 if [[ $EXIT_CODE -eq 0 ]]; then
   TOTAL_FILES=$(echo "${CONTENTS}" | grep -Ecv "(/|MANIFEST.MF)$")
-ó
   if [ "$TOTAL_FILES" -ne $EXPECTED_TOTAL_FILES ]; then
     echo "Expected total number of files in the jar to be ${EXPECTED_TOTAL_FILES}, but it was ${TOTAL_FILES}"
     EXIT_CODE=1
