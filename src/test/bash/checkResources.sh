@@ -34,7 +34,6 @@ for LIB in $EXPECTED; do
   fi
 done
 
-# check there are no other unexpected files in the jar
 if [[ $EXIT_CODE -eq 0 ]]; then
   echo -n "Checking if the count of the files in the jar is ${EXPECTED_TOTAL_FILES}"
   # exclude directories and the manifest file
