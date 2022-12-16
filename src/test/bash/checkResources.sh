@@ -6,9 +6,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 JAR=${1:?Must specify path to an already built jc-kzg-4844 jar file}
 
-CONTENTS=$(jar tvf "${JAR}")
+# exclude directories and the manifest file
+JAR_FILES=$(jar tvf "${JAR}" | grep -Ev "(/|MANIFEST.MF)$")
 
-EXPECTED="ethereum/ckzg4844/CKZG4844JNI\$Preset.class
+EXPECTED_FILES="ethereum/ckzg4844/CKZG4844JNI\$Preset.class
 ethereum/ckzg4844/CKZG4844JNI.class
 ethereum/ckzg4844/lib/amd64/mainnet/libckzg4844jni.so
 ethereum/ckzg4844/lib/aarch64/mainnet/libckzg4844jni.so
@@ -21,13 +22,11 @@ ethereum/ckzg4844/lib/amd64/minimal/ckzg4844jni.dll
 ethereum/ckzg4844/lib/x86_64/minimal/libckzg4844jni.dylib
 ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.dylib"
 
-EXPECTED_TOTAL_FILES=$(echo "${EXPECTED}" | wc -l)
-
 EXIT_CODE=0
 
-for LIB in $EXPECTED; do
+for LIB in $EXPECTED_FILES; do
   echo -n "Checking for $LIB: "
-  if [[ "$CONTENTS" == *"$LIB"* ]]; then
+  if [[ "$JAR_FILES" == *"$LIB"* ]]; then
     echo "Present"
   else
     echo "Missing!"
@@ -36,10 +35,12 @@ for LIB in $EXPECTED; do
 done
 
 if [[ $EXIT_CODE -eq 0 ]]; then
-  # exclude directories and the manifest file
-  TOTAL_FILES=$(echo "${CONTENTS}" | grep -Ecv "(/|MANIFEST.MF)$")
-  if [ "$TOTAL_FILES" -ne "$EXPECTED_TOTAL_FILES" ]; then
-    echo -e "Expected number of files in the jar to be ${EXPECTED_TOTAL_FILES}, but it was ${TOTAL_FILES}."
+  EXPECTED_FILES_COUNT=$(echo "${EXPECTED_FILES}" | wc -l)
+  JAR_FILES_COUNT=$(echo "${JAR_FILES}" | wc -l)
+  if [ "$EXPECTED_FILES_COUNT" -ne "$JAR_FILES_COUNT" ]; then
+    echo "Expected number of files in the jar to be ${EXPECTED_FILES_COUNT}, but it was ${JAR_FILES_COUNT}."
+    echo "Files in the jar:"
+    echo "${JAR_FILES}"
     EXIT_CODE=1
   fi
 fi
