@@ -24,9 +24,9 @@ ethereum/ckzg4844/lib/aarch64/minimal/libckzg4844jni.dylib"
 
 EXIT_CODE=0
 
-for LIB in $EXPECTED_FILES; do
-  echo -n "Checking for $LIB: "
-  if [[ "$JAR_FILES" == *"$LIB"* ]]; then
+for FILE in $EXPECTED_FILES; do
+  echo -n "Checking for $FILE: "
+  if [[ "$JAR_FILES" == *"$FILE"* ]]; then
     echo "Present"
   else
     echo "Missing!"
