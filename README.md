@@ -1,10 +1,11 @@
 # jc-kzg-4844
 
 [![Build Status](https://circleci.com/gh/ConsenSys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/ConsenSys/workflows/jc-kzg-4844)
+[![GitHub last commit (master)](https://img.shields.io/github/last-commit/ConsenSys/jc-kzg-4844/master)](https://github.com/ConsenSys/jc-kzg-4844/commits/master)
 [![Latest version of 'jc-kzg-4844' @ Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/consensys/maven/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/?render=true&show_latest=true)](https://cloudsmith.io/~consensys/repos/maven/packages/detail/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/)
 [![GitHub license](https://img.shields.io/github/license/ConsenSys/jc-kzg-4844.svg)](https://github.com/ConsenSys/jc-kzg-4844/blob/master/LICENSE)
 
-Java wrapper around [C-KZG-4844](https://github.com/ethereum/c-kzg-4844)
+Java wrapper around [C-KZG-4844](https://github.com/ethereum/c-kzg-4844).
 
 🚧 This project is still WIP.
 
@@ -39,12 +40,15 @@ boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob, commitment, 1, 
 CKZG4844JNI.freeTrustedSetup();
 ```
 
-## Trusted setup file format
+## Loading trusted setup
 
-The trusted setup file which the library loads needs to be of the following
-format: [trusted_setup.txt](https://github.com/ethereum/c-kzg-4844/blob/main/src/trusted_setup.txt)
+There are two ways to load the trusted setup.
 
-This could change with future versions of the library.
+### File
+The file needs to be of the following format: [trusted_setup.txt](https://github.com/ethereum/c-kzg-4844/blob/main/src/trusted_setup.txt)
+
+### Method parameters 
+Look at the `loadTrustedSetup(byte[], long, byte[], long)` method.
 
 ## Supported platforms
 
