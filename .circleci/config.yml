@@ -239,4 +239,4 @@ workflows:
               only:
                 - master
           context:
-            - cloudsmith-protocols
+            - protocols-cloudsmith
