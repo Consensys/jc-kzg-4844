@@ -7,7 +7,7 @@ orbs:
 executors:
   linux_executor:
     docker:
-      - image: cimg/openjdk:11.0.17
+      - image: cimg/openjdk:11.0.18
     resource_class: medium
     working_directory: ~/jc-kzg-4844
 
@@ -19,7 +19,7 @@ executors:
 
   mac_os_executor:
     macos:
-      xcode: "14.1.0"
+      xcode: "14.2.0"
     working_directory: ~/jc-kzg-4844
 
 commands:

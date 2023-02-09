@@ -1,7 +1,7 @@
 plugins {
-    id "java"
+    id "java-library"
     id "maven-publish"
-    id "me.qoomon.git-versioning" version "6.3.6"
+    id "me.qoomon.git-versioning" version "6.4.0"
 }
 
 repositories {
@@ -32,21 +32,8 @@ gitVersioning.apply {
 java {
     sourceCompatibility = 11
     targetCompatibility = 11
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set("sources")
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set("javadoc")
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+    withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
@@ -62,10 +49,11 @@ publishing {
     }
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            version project.version
+
+            groupId = project.group
+            version = project.version
+
             from components.java
-            artifact sourcesJar
 
             versionMapping {
                 usage("java-api") { fromResolutionOf("runtimeClasspath") }
@@ -91,7 +79,7 @@ publishing {
     }
 }
 
-task checkJarContents() {
+tasks.register("checkJarContents") {
     doLast {
         exec {
             executable project.file("src/test/bash/checkResources.sh")
