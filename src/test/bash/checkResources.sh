@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-export PATH="$JAVA_HOME/bin:$PATH"
-
 JAR=${1:?Must specify path to an already built jc-kzg-4844 jar file}
 
 # exclude directories and the manifest file
