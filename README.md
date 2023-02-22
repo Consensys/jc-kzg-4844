@@ -31,9 +31,9 @@ CKZG4844JNI.loadTrustedSetup("trusted-setup.txt");
 
 byte[] blob = ...;
 byte[] commitment = CKZG4844JNI.blobToKzgCommitment(blob);
-byte[] proof = CKZG4844JNI.computeAggregateKzgProof(blob, 1);
+byte[] proof = CKZG4844JNI.computeBlobKzgProof(blob);
 
-boolean isValidProof = CKZG4844JNI.verifyAggregateKzgProof(blob, commitment, 1, proof);
+boolean isValidProof = CKZG4844JNI.verifyBlobKzgProof(blob, commitment, proof);
 
 // the current trusted setup should be freed before a new one is loaded
 CKZG4844JNI.freeTrustedSetup();
