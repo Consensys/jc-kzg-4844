@@ -51,7 +51,8 @@ commands:
           name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
-            make << parameters.make_env >> build test -B
+            make << parameters.make_env >> build -B
+            ./gradlew clean test --debug
 
 jobs:
   x86-64-linux-build:
