@@ -139,10 +139,10 @@ jobs:
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
-            ./gradlew.bat clean test
+            ./gradlew.bat clean check
             export PRESET=minimal
             make build -B
-            ./gradlew.bat clean test
+            ./gradlew.bat clean check
       - persist_to_workspace:
           root: ./
           paths:
