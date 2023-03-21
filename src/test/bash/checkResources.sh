@@ -11,7 +11,7 @@ EXPECTED_FILES="ethereum/ckzg4844/CKZG4844JNI\$Preset.class
 ethereum/ckzg4844/CKZG4844JNI.class
 ethereum/ckzg4844/CKZGException\$CKZGError.class
 ethereum/ckzg4844/CKZGException.class
-ethereum/ckzg4844/ByteArrayTuple.class
+ethereum/ckzg4844/ProofAndY.class
 ethereum/ckzg4844/lib/amd64/mainnet/libckzg4844jni.so
 ethereum/ckzg4844/lib/aarch64/mainnet/libckzg4844jni.so
 ethereum/ckzg4844/lib/amd64/mainnet/ckzg4844jni.dll
