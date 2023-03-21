@@ -31,7 +31,7 @@ CKZG4844JNI.loadTrustedSetup("trusted-setup.txt");
 
 byte[] blob = ...;
 byte[] commitment = CKZG4844JNI.blobToKzgCommitment(blob);
-byte[] proof = CKZG4844JNI.computeBlobKzgProof(blob);
+byte[] proof = CKZG4844JNI.computeBlobKzgProof(blob, commitment);
 
 boolean isValidProof = CKZG4844JNI.verifyBlobKzgProof(blob, commitment, proof);
 
