@@ -131,13 +131,13 @@ jobs:
           command: |
             choco install make
             choco install mingw --yes
+            choco install openjdk11 --yes
       - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            ls "/c/Program Files/OpenJDK/"
-            export JAVA_HOME="/c/Program Files/OpenJDK/jdk-17"
+            export JAVA_HOME="/c/Program Files/OpenJDK/jdk-11"
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
