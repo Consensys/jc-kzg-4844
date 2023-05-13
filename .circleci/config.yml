@@ -131,11 +131,13 @@ jobs:
           command: |
             choco install make
             choco install mingw --yes
+            choco install openjdk11 --yes
       - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
+            export JAVA_HOME="/c/Program Files/Eclipse Adoptium/jdk-11.0.19.7-hotspot"
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
