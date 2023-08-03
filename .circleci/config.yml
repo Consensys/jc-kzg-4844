@@ -128,10 +128,7 @@ jobs:
       - checkout_code
       - run:
           name: "Install dependencies"
-          # https://community.chocolatey.org/packages/openjdk11#description
           command: |
-#            choco install make
-#            choco install mingw --yes
             choco install openjdk11 --yes
       - build_blst
       - run:
