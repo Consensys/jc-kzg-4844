@@ -129,15 +129,17 @@ jobs:
       - run:
           name: "Install dependencies"
           command: |
+            choco install make
+            choco install mingw --yes
             choco install openjdk11 --yes
+      - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            ls -d "/c/Program Files/Eclipse Adoptium"
-            ls -d "/c/Program Files/Eclipse Adoptium/"
-            ls -d "/c/Program Files/Eclipse Adoptium/*"
-            export JAVA_HOME=`ls -d "/c/Program Files/Eclipse Adoptium/*" | tail -n1`
+            JDK_DISTRIBUTION_FOLDER="/c/Program Files/Eclipse Adoptium"
+            JDK_VERSION=`ls $JDK_DISTRIBUTION_FOLDER | tail -n1`
+            export JAVA_HOME="$JDK_DISTRIBUTION_FOLDER/$JDK_VERSION"
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
