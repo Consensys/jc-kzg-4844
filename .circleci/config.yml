@@ -138,7 +138,7 @@ jobs:
           name: "Build and test java binding"
           command: |
             JDK_DISTRIBUTION_FOLDER="/c/Program Files/Eclipse Adoptium"
-            JDK_VERSION=`ls $JDK_DISTRIBUTION_FOLDER | tail -n1`
+            JDK_VERSION=`ls "$JDK_DISTRIBUTION_FOLDER" | tail -n1`
             export JAVA_HOME="$JDK_DISTRIBUTION_FOLDER/$JDK_VERSION"
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
