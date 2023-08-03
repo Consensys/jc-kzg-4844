@@ -138,6 +138,7 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
+            ls -d /c/Program Files/Eclipse Adoptium/*
             export JAVA_HOME=`ls -d "/c/Program Files/Eclipse Adoptium/*" | tail -n1`
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
