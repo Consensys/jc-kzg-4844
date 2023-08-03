@@ -134,7 +134,7 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            ls "/c/Program Files/Eclipse Adoptium"
+            ls -d "/c/Program Files/Eclipse Adoptium"
             ls -d "/c/Program Files/Eclipse Adoptium/"
             ls -d "/c/Program Files/Eclipse Adoptium/*"
             export JAVA_HOME=`ls -d "/c/Program Files/Eclipse Adoptium/*" | tail -n1`
