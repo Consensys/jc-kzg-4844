@@ -1,12 +1,10 @@
 # jc-kzg-4844
 
-[![Build Status](https://circleci.com/gh/ConsenSys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/ConsenSys/workflows/jc-kzg-4844)
-[![GitHub license](https://img.shields.io/github/license/ConsenSys/jc-kzg-4844.svg?logo=apache)](https://github.com/ConsenSys/jc-kzg-4844/blob/master/LICENSE)
+[![Build Status](https://circleci.com/gh/Consensys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/Consensys/workflows/jc-kzg-4844)
+[![GitHub license](https://img.shields.io/github/license/Consensys/jc-kzg-4844.svg?logo=apache)](https://github.com/Consensys/jc-kzg-4844/blob/master/LICENSE)
 [![Latest version of 'jc-kzg-4844' @ Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/consensys/maven/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/?render=true&show_latest=true)](https://cloudsmith.io/~consensys/repos/maven/packages/detail/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/)
 
 Provides building and packaging of the [Java bindings](https://github.com/ethereum/c-kzg-4844/tree/main/bindings/java) in [C-KZG-4844](https://github.com/ethereum/c-kzg-4844).
-
-🚧 This project is still WIP.
 
 ## Dependency
 
