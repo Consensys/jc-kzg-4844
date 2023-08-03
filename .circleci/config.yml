@@ -137,7 +137,8 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            export JAVA_HOME=`find /c/Program Files/Eclipse Adoptium/ -type d -iname "jdk-11*"`
+            ls "/c/Program Files/Eclipse Adoptium/"
+            export JAVA_HOME=`find "/c/Program Files/Eclipse Adoptium/" -type d -iname "jdk-11*" | tail -n1` 
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
