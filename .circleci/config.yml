@@ -130,7 +130,6 @@ jobs:
           name: "Install dependencies"
           command: |
             choco install openjdk11 --yes
-      - build_blst
       - run:
           shell: bash.exe
           name: "Build and test java binding"
