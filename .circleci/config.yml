@@ -128,6 +128,7 @@ jobs:
       - checkout_code
       - run:
           name: "Install dependencies"
+          # https://community.chocolatey.org/packages/openjdk11#description
           command: |
             choco install make
             choco install mingw --yes
@@ -137,9 +138,7 @@ jobs:
           shell: bash.exe
           name: "Build and test java binding"
           command: |
-            ls "/c/Program Files/Eclipse Adoptium/"
-            find "/c/Program Files/Eclipse Adoptium" -type d -name "*jdk-11*"
-            export JAVA_HOME=`find "/c/Program Files/Eclipse Adoptium" -type d -name "jdk-11*" | tail -n1` 
+            export JAVA_HOME=`ls -d "/c/Program Files/Eclipse Adoptium/*" | tail -n1`
             cd c-kzg-4844/bindings/java
             export PRESET=mainnet
             make build -B
