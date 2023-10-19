@@ -40,7 +40,7 @@ commands:
           name: "Build blst"
           command: |
             cd c-kzg-4844/src
-            make << parameters.make_env >> blst
+            make << parameters.make_env >> blst -B
   build_and_test_java_binding:
     parameters:
       make_env:
@@ -51,7 +51,7 @@ commands:
           name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
-            make << parameters.make_env >> build test
+            make << parameters.make_env >> build test -B
 
 jobs:
   x86-64-linux-build:
