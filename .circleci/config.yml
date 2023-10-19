@@ -7,7 +7,7 @@ orbs:
 executors:
   linux_executor:
     docker:
-      - image: cimg/openjdk:11.0.18
+      - image: cimg/openjdk:11.0.20
     resource_class: medium
     working_directory: ~/jc-kzg-4844
 
@@ -19,7 +19,7 @@ executors:
 
   mac_os_executor:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     working_directory: ~/jc-kzg-4844
 
 commands:
@@ -64,15 +64,11 @@ jobs:
             sudo apt-get update
             sudo apt-get install clang
       - build_blst
-      - build_and_test_java_binding:
-          make_env: "PRESET=mainnet"
-      - build_and_test_java_binding:
-          make_env: "PRESET=minimal"
+      - build_and_test_java_binding
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/mainnet
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/minimal
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
 
   arm64-linux-build:
     executor: linux_executor_arm64
@@ -90,37 +86,27 @@ jobs:
             sudo apt-get install clang
       - build_blst
       - build_and_test_java_binding:
-          make_env: "PRESET=mainnet OS_ARCH=aarch64"
-      - build_and_test_java_binding:
-          make_env: "PRESET=minimal OS_ARCH=aarch64"
+          make_env: "OS_ARCH=aarch64"
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/mainnet
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/minimal
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
 
   mac-os-build:
     executor: mac_os_executor
     steps:
       - checkout_code
       - build_blst
-      - build_and_test_java_binding:
-          make_env: "PRESET=mainnet"
-      - build_and_test_java_binding:
-          make_env: "PRESET=minimal"
+      - build_and_test_java_binding
       - build_blst:
           make_env: 'CC="cc -arch arm64"'
       - build_and_test_java_binding:
-          make_env: 'PRESET=mainnet CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
-      - build_and_test_java_binding:
-          make_env: 'PRESET=minimal CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
+          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64/mainnet
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/mainnet
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64/minimal
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64/minimal
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
 
   windows-build:
     executor: win/default
@@ -130,7 +116,7 @@ jobs:
           name: "Install dependencies"
           command: |
             choco install make
-            choco install mingw --yes
+            choco install mingw --version 12.2.0.03042023 --allow-downgrade --yes
             choco install openjdk11 --yes
       - build_blst
       - run:
@@ -141,17 +127,12 @@ jobs:
             JDK_VERSION=`ls "$JDK_DISTRIBUTION_FOLDER" | tail -n1`
             export JAVA_HOME="$JDK_DISTRIBUTION_FOLDER/$JDK_VERSION"
             cd c-kzg-4844/bindings/java
-            export PRESET=mainnet
-            make build -B
-            ./gradlew.bat clean check
-            export PRESET=minimal
-            make build -B
+            make build
             ./gradlew.bat clean check
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/mainnet
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64/minimal
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
 
   assemble:
     executor: linux_executor
