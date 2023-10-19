@@ -7,8 +7,7 @@ JAR=${1:?Must specify path to an already built jc-kzg-4844 jar file}
 # exclude directories and the manifest file
 JAR_FILES=$(jar tvf "${JAR}" | grep -Ev "(/|MANIFEST.MF)$")
 
-EXPECTED_FILES="ethereum/ckzg4844/CKZG4844JNI\$Preset.class
-ethereum/ckzg4844/CKZG4844JNI.class
+EXPECTED_FILES="ethereum/ckzg4844/CKZG4844JNI.class
 ethereum/ckzg4844/CKZGException\$CKZGError.class
 ethereum/ckzg4844/CKZGException.class
 ethereum/ckzg4844/ProofAndY.class
