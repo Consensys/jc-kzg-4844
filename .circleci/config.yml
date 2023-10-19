@@ -64,7 +64,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install clang
       - build_blst
-      - build_and_test_java_binding:
+      - build_and_test_java_binding
       - persist_to_workspace:
           root: ./
           paths:
@@ -97,7 +97,7 @@ jobs:
     steps:
       - checkout_code
       - build_blst
-      - build_and_test_java_binding:
+      - build_and_test_java_binding
       - build_blst:
           make_env: 'CC="cc -arch arm64"'
       - build_and_test_java_binding:
