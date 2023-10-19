@@ -116,9 +116,8 @@ jobs:
           name: "Install dependencies"
           command: |
             choco install make
-            choco install mingw --yes
+            choco install mingw --version 12.2.0.03042023 --allow-downgrade --yes
             choco install openjdk11 --yes
-            refreshenv
       - build_blst
       - run:
           shell: bash.exe
