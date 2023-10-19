@@ -118,6 +118,7 @@ jobs:
             choco install make
             choco install mingw --yes
             choco install openjdk11 --yes
+            refreshenv
       - build_blst
       - run:
           shell: bash.exe
