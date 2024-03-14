@@ -2,7 +2,7 @@
 
 [![Build Status](https://circleci.com/gh/Consensys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/Consensys/workflows/jc-kzg-4844)
 [![GitHub license](https://img.shields.io/github/license/Consensys/jc-kzg-4844.svg?logo=apache)](https://github.com/Consensys/jc-kzg-4844/blob/master/LICENSE)
-[![Version of 'c-kzg-4844'](https://img.shields.io/badge/c--kzg--4844-v0.4.0-blue.svg)](https://github.com/ethereum/c-kzg-4844/releases/tag/v0.4.0)
+[![Version of 'c-kzg-4844'](https://img.shields.io/badge/c--kzg--4844-v1.0.0-blue.svg)](https://github.com/ethereum/c-kzg-4844/releases/tag/v1.0.0)
 [![Latest version of 'jc-kzg-4844' @ Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/consensys/maven/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/?render=true&show_latest=true)](https://cloudsmith.io/~consensys/repos/maven/packages/detail/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/)
 
 Provides building and packaging of the [Java bindings](https://github.com/ethereum/c-kzg-4844/tree/main/bindings/java) in [C-KZG-4844](https://github.com/ethereum/c-kzg-4844).
