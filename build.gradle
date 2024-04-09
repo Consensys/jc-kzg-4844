@@ -20,6 +20,9 @@ gitVersioning.apply {
         branch("master") {
             version = "develop"
         }
+        branch("das") {
+            version = "das-test"
+        }
         branch(".+") {
             version = "\${ref}"
         }
