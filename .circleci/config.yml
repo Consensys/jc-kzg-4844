@@ -189,22 +189,10 @@ workflows:
   version: 2
   default:
     jobs:
-      - x86-64-linux-build:
-#          filters:
-#            tags: &filters-release-tags
-#              only: /^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/
-      - arm64-linux-build:
-#          filters:
-#            tags:
-#              <<: *filters-release-tags
-      - mac-os-build:
-#          filters:
-#            tags:
-#              <<: *filters-release-tags
-      - windows-build:
-#          filters:
-#            tags:
-#              <<: *filters-release-tags
+      - x86-64-linux-build
+      - arm64-linux-build
+      - mac-os-build
+      - windows-build
       - assemble:
           requires:
             - x86-64-linux-build
