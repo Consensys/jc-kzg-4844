@@ -18,6 +18,9 @@ dependencies {
     implementation("tech.pegasys:jc-kzg-4844:<version>")
 }
 ```
+The library is also available on Maven Central
+
+[![Maven Central](https://img.shields.io/maven-central/v/tech.pegasys/jc-kzg-4844)](https://central.sonatype.com/artifact/tech.pegasys/jc-kzg-4844)
 
 ## Minimal sample
 
