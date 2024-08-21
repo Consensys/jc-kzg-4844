@@ -20,6 +20,7 @@ executors:
   mac_os_executor:
     macos:
       xcode: "15.3.0"
+    resource_class: macos.m1.medium.gen1
     working_directory: ~/jc-kzg-4844
 
 commands:
@@ -99,9 +100,9 @@ jobs:
       - build_blst
       - build_and_test_java_binding
       - build_blst:
-          make_env: 'CC="cc -arch arm64"'
+          make_env: 'CC="cc -arch x86_64"'
       - build_and_test_java_binding:
-          make_env: 'CC_FLAGS="-target arm64-apple-macos" OS_ARCH=aarch64'
+          make_env: 'CC_FLAGS="-target x86_64-apple-macos" OS_ARCH=x86_64'
       - persist_to_workspace:
           root: ./
           paths:
