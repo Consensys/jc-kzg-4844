@@ -42,7 +42,7 @@ commands:
           command: |
             cd c-kzg-4844/src
             # required for mac-os multi-arch compiling
-            rm -f lib/libblst.a
+            rm -f ../blst/libblst.a ../lib/libblst.a
             make << parameters.make_env >> blst -B
   build_and_test_java_binding:
     parameters:
