@@ -106,8 +106,8 @@ jobs:
       - persist_to_workspace:
           root: ./
           paths:
-            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64
             - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
+            - ./c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/x86_64
 
   windows-build:
     executor: win/default
