@@ -10,6 +10,7 @@ JAR_FILES=$(jar tvf "${JAR}" | grep -Ev "(/|MANIFEST.MF)$")
 EXPECTED_FILES="ethereum/ckzg4844/CKZG4844JNI.class
 ethereum/ckzg4844/CKZGException\$CKZGError.class
 ethereum/ckzg4844/CKZGException.class
+ethereum/ckzg4844/CellsAndProofs.class
 ethereum/ckzg4844/ProofAndY.class
 ethereum/ckzg4844/lib/amd64/libckzg4844jni.so
 ethereum/ckzg4844/lib/aarch64/libckzg4844jni.so
