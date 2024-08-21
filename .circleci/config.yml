@@ -41,6 +41,7 @@ commands:
           name: "Build blst"
           command: |
             cd c-kzg-4844/src
+            make clean
             make << parameters.make_env >> blst -B
   build_and_test_java_binding:
     parameters:
@@ -52,6 +53,7 @@ commands:
           name: "Build and test java binding"
           command: |
             cd c-kzg-4844/bindings/java
+            make clean
             make << parameters.make_env >> build test -B
 
 jobs:
