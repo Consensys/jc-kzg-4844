@@ -184,7 +184,7 @@ jobs:
       - run:
           name: "Publish"
           command: |
-            ./gradlew --no-daemon --parallel checkJarContents publish
+            ./gradlew --no-daemon --parallel checkJarContents publish jreleaserFullRelease
 
 workflows:
   version: 2
@@ -222,7 +222,6 @@ workflows:
             tags:
               <<: *filters-release-tags
             branches:
-              only:
-                - master
+              ignore: /.*/
           context:
-            - protocols-cloudsmith
+            - protocols-maven-central

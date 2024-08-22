@@ -1,6 +1,7 @@
 plugins {
     id "java-library"
     id "maven-publish"
+    id "org.jreleaser" version "1.13.1"
     id "me.qoomon.git-versioning" version "6.4.3"
 }
 
@@ -8,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-group = "tech.pegasys"
+group = "io.consensys.protocols"
 
 version = "UNKNOWN"
 
@@ -37,16 +38,6 @@ java {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "cloudsmith"
-            url = "https://api-g.cloudsmith.io/maven/consensys/maven/"
-            credentials {
-                username = System.getenv("CLOUDSMITH_USER")
-                password = System.getenv("CLOUDSMITH_API_KEY")
-            }
-        }
-    }
     publications {
         mavenJava(MavenPublication) {
 
@@ -69,6 +60,13 @@ publishing {
                         url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                     }
                 }
+                developers {
+                    developer {
+                        id = "consensys"
+                        name = "Protocols Team"
+                        email = "devops@consensys.net"
+                    }
+                }
                 scm {
                     connection = "scm:git:git://github.com/Consensys/jc-kzg-4844.git"
                     developerConnection = "scm:git:ssh://github.com/Consensys/jc-kzg-4844.git"
@@ -77,7 +75,29 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }    
 }
+
+jreleaser {
+  signing {
+    active = 'ALWAYS'
+    armored = true
+  }
+  deploy {
+    maven {
+      mavenCentral {
+        sonatype {
+          active = 'ALWAYS'
+          url = 'https://central.sonatype.com/api/v1/publisher'
+          stagingRepository('target/staging-deploy')
+        }
+      }
+    }
+  }
 
 tasks.register("checkJarContents") {
     doLast {
