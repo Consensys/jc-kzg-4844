@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -34,12 +36,10 @@ gitVersioning.apply {
 java {
     sourceCompatibility = 17
     targetCompatibility = 17
-    withJavadocJar()
-    withSourcesJar()
 }
 
 mavenPublishing {
-    coordinates("${project.group}", "${project.name}", "${project.version}")
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
 
     pom {
         name = "${project.name}"
@@ -69,6 +69,9 @@ mavenPublishing {
 
     signAllPublications()
 }
+
+// https://github.com/vanniktech/gradle-maven-publish-plugin/issues/821
+mavenPlainJavadocJar.archiveBaseName.set("${project.name}")
 
 tasks.register("checkJarContents") {
     doLast {
