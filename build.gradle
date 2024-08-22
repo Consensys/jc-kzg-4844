@@ -83,11 +83,6 @@ publishing {
 }
 
 jreleaser {
-  release {
-    github {
-      enabled = false
-    }
-  }
   signing {
     active = "ALWAYS"
     armored = true
