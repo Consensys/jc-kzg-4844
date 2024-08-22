@@ -7,7 +7,7 @@ orbs:
 executors:
   linux_executor:
     docker:
-      - image: cimg/openjdk:11.0.22
+      - image: cimg/openjdk:17.0.11
     resource_class: medium
     working_directory: ~/jc-kzg-4844
 
@@ -74,16 +74,16 @@ jobs:
   arm64-linux-build:
     executor: linux_executor_arm64
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-arm64
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-arm64
     steps:
       - checkout_code
       - run:
           name: "Install dependencies"
           command: |
             sudo apt-get update
-            sudo apt-get install openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-11-openjdk-arm64/bin/javac
+            sudo apt-get install openjdk-17-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-arm64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-arm64/bin/javac
             sudo apt-get install clang
       - build_blst
       - build_and_test_java_binding:
@@ -118,7 +118,7 @@ jobs:
           command: |
             choco install make
             choco install mingw --version 12.2.0.03042023 --allow-downgrade --yes
-            choco install openjdk11 --yes
+            choco install openjdk17 --yes
       - build_blst
       - run:
           shell: bash.exe
@@ -184,7 +184,7 @@ jobs:
       - run:
           name: "Publish"
           command: |
-            ./gradlew --no-daemon --parallel checkJarContents publish
+            ./gradlew --no-daemon --parallel checkJarContents publish jreleaserFullRelease
 
 workflows:
   version: 2
@@ -222,7 +222,6 @@ workflows:
             tags:
               <<: *filters-release-tags
             branches:
-              only:
-                - master
+              ignore: /.*/
           context:
-            - protocols-cloudsmith
+            - protocols-maven-central

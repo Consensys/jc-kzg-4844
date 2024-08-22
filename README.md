@@ -2,25 +2,18 @@
 
 [![Build Status](https://circleci.com/gh/Consensys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/Consensys/workflows/jc-kzg-4844)
 [![GitHub license](https://img.shields.io/github/license/Consensys/jc-kzg-4844.svg?logo=apache)](https://github.com/Consensys/jc-kzg-4844/blob/master/LICENSE)
-[![Version of 'c-kzg-4844'](https://img.shields.io/badge/c--kzg--4844-v1.0.0-blue.svg)](https://github.com/ethereum/c-kzg-4844/releases/tag/v1.0.0)
-[![Latest version of 'jc-kzg-4844' @ Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/consensys/maven/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/?render=true&show_latest=true)](https://cloudsmith.io/~consensys/repos/maven/packages/detail/maven/jc-kzg-4844/latest/a=noarch;xg=tech.pegasys/)
+[![Version of 'c-kzg-4844'](https://img.shields.io/badge/c--kzg--4844-v2.0.0-blue.svg)](https://github.com/ethereum/c-kzg-4844/releases/tag/v2.0.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.consensys.protocols/jc-kzg-4844)](https://central.sonatype.com/artifact/io.consensys.protocols/jc-kzg-4844)
 
 Provides building and packaging of the [Java bindings](https://github.com/ethereum/c-kzg-4844/tree/main/bindings/java) in [C-KZG-4844](https://github.com/ethereum/c-kzg-4844).
 
 ## Dependency
 
 ```groovy
-repositories {
-    maven { url "https://artifacts.consensys.net/public/maven/maven/" }
-}
-
 dependencies {
-    implementation("tech.pegasys:jc-kzg-4844:<version>")
+    implementation("io.consensys.protocols:jc-kzg-4844:<version>")
 }
 ```
-The library is also available on Maven Central
-
-[![Maven Central](https://img.shields.io/maven-central/v/tech.pegasys/jc-kzg-4844)](https://central.sonatype.com/artifact/tech.pegasys/jc-kzg-4844)
 
 ## Minimal sample
 
