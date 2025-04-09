@@ -46,32 +46,63 @@ signing {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+
+            groupId = project.group
+            version = project.version
+
             from components.java
 
+            versionMapping {
+                usage("java-api") { fromResolutionOf("runtimeClasspath") }
+                usage("java-runtime") { fromResolutionResult() }
+            }
             pom {
-                name.set(project.name)
-                description.set("Java wrapper around C-KZG-4844")
-                url.set("http://github.com/Consensys/jc-kzg-4844")
-
+                name = "${project.name}"
+                url = "http://github.com/Consensys/jc-kzg-4844"
+                description = "Java wrapper around C-KZG-4844"
                 licenses {
                     license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                     }
                 }
-
                 developers {
                     developer {
-                        id.set("consensys")
-                        name.set("Protocols Team")
-                        email.set("devops@consensys.net")
+                        id = "consensys"
+                        name = "Protocols Team"
+                        email = "devops@consensys.net"
                     }
                 }
-
                 scm {
-                    connection.set("scm:git:git://github.com/Consensys/jc-kzg-4844.git")
-                    developerConnection.set("scm:git:ssh://github.com/Consensys/jc-kzg-4844.git")
-                    url.set("https://github.com/Consensys/jc-kzg-4844")
+                    connection = "scm:git:git://github.com/Consensys/jc-kzg-4844.git"
+                    developerConnection = "scm:git:ssh://github.com/Consensys/jc-kzg-4844.git"
+                    url = "https://github.com/Consensys/jc-kzg-4844"
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir("staging-deploy")
+        }
+    }
+}
+
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            nexus2 {
+                'maven-central' {
+                    active = 'ALWAYS'
+                    url = 'https://s01.oss.sonatype.org/service/local'
+                    snapshotUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                    closeRepository = true
+                    releaseRepository = true
+                    stagingRepository('build/staging-deploy')
                 }
             }
         }
