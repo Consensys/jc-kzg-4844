@@ -222,6 +222,6 @@ workflows:
             tags:
               <<: *filters-release-tags
             branches:
-              ignore: /.*/
+              only: jreleaser
           context:
             - protocols-maven-central
