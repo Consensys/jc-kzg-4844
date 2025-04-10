@@ -1,11 +1,8 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     id "java-library"
-    id "com.vanniktech.maven.publish" version "0.29.0"
-    id "me.qoomon.git-versioning" version "6.4.3"
+    id "me.qoomon.git-versioning" version "6.4.4"
+    id "maven-publish"
+    id "org.jreleaser" version "1.17.0"
 }
 
 repositories {
@@ -36,42 +33,70 @@ gitVersioning.apply {
 java {
     sourceCompatibility = 17
     targetCompatibility = 17
+    withJavadocJar()
+    withSourcesJar()
 }
 
-mavenPublishing {
-    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
 
-    pom {
-        name = "${project.name}"
-        url = "http://github.com/Consensys/jc-kzg-4844"
-        description = "Java wrapper around C-KZG-4844"
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            from components.java
+
+            pom {
+                name = "${project.name}"
+                url = "http://github.com/Consensys/jc-kzg-4844"
+                description = "Java wrapper around C-KZG-4844"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "consensys"
+                        name = "Protocols Team"
+                        email = "devops@consensys.net"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/Consensys/jc-kzg-4844.git"
+                    developerConnection = "scm:git:ssh://github.com/Consensys/jc-kzg-4844.git"
+                    url = "https://github.com/Consensys/jc-kzg-4844"
+                }
             }
         }
-        developers {
-            developer {
-                id = "consensys"
-                name = "Protocols Team"
-                email = "devops@consensys.net"
-            }
+    }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir("staging-deploy")
         }
-        scm {
-            connection = "scm:git:git://github.com/Consensys/jc-kzg-4844.git"
-            developerConnection = "scm:git:ssh://github.com/Consensys/jc-kzg-4844.git"
-            url = "https://github.com/Consensys/jc-kzg-4844"
-        }
-    }  
-
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
+    }
 }
 
-// https://github.com/vanniktech/gradle-maven-publish-plugin/issues/821
-mavenPlainJavadocJar.archiveBaseName.set("${project.name}")
+jreleaser {
+    release {
+        github {
+            enabled = false
+        }
+    }
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
+}
 
 tasks.register("checkJarContents") {
     doLast {
