@@ -1,8 +1,8 @@
 plugins {
     id "java-library"
-    id "me.qoomon.git-versioning" version "6.4.3"
+    id "me.qoomon.git-versioning" version "6.4.4"
     id "maven-publish"
-    id "org.jreleaser" version "1.16.0"
+    id "org.jreleaser" version "1.17.0"
     id "signing"
 }
 
@@ -47,15 +47,8 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
 
-            groupId = project.group
-            version = project.version
-
             from components.java
 
-            versionMapping {
-                usage("java-api") { fromResolutionOf("runtimeClasspath") }
-                usage("java-runtime") { fromResolutionResult() }
-            }
             pom {
                 name = "${project.name}"
                 url = "http://github.com/Consensys/jc-kzg-4844"
@@ -95,13 +88,10 @@ jreleaser {
     }
     deploy {
         maven {
-            nexus2 {
-                'maven-central' {
+            mavenCentral {
+                sonatype {
                     active = 'ALWAYS'
-                    url = 'https://s01.oss.sonatype.org/service/local'
-                    snapshotUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                    closeRepository = true
-                    releaseRepository = true
+                    url = 'https://central.sonatype.com/api/v1/publisher'
                     stagingRepository('build/staging-deploy')
                 }
             }
