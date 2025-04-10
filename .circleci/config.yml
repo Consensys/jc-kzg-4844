@@ -184,7 +184,7 @@ jobs:
       - run:
           name: "Publish"
           command: |
-            ./gradlew --no-daemon --parallel checkJarContents publish jreleaserSign jreleaserDeploy
+            ./gradlew --no-daemon --parallel --stacktrace checkJarContents publish jreleaserSign jreleaserDeploy
 
 workflows:
   version: 2
