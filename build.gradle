@@ -3,7 +3,6 @@ plugins {
     id "me.qoomon.git-versioning" version "6.4.4"
     id "maven-publish"
     id "org.jreleaser" version "1.17.0"
-    id "signing"
 }
 
 repositories {
@@ -77,6 +76,11 @@ publishing {
 }
 
 jreleaser {
+    release {
+        github {
+            enabled = false
+        }
+    }
     signing {
         active = 'ALWAYS'
         armored = true
