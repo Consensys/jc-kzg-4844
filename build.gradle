@@ -22,7 +22,7 @@ gitVersioning.apply {
             version = "develop"
         }
         branch(".+") {
-            version = "2.1.1"
+            version = "\${ref}"
         }
     }
     rev {
