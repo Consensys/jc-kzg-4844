@@ -77,9 +77,10 @@ publishing {
 
 jreleaser {
     release {
-        // Creating and tagging a release is done manually
-        dryrun = true
         github {
+            // Creating and tagging a release is done manually
+            skipRelease = true
+            skipTag = true
             // injecting a fake value to make JReleaser happy
             token = "foobar"
         }
