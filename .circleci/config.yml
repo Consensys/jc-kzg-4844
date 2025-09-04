@@ -81,10 +81,11 @@ jobs:
           name: "Install dependencies"
           command: |
             sudo apt-get update
-            sudo apt-get install openjdk-17-jdk
+            export DEBIAN_FRONTEND=noninteractive
+            export NEEDRESTART_MODE=a
+            sudo -E apt-get install openjdk-17-jdk clang
             sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-arm64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-arm64/bin/javac
-            sudo apt-get install clang
       - build_blst
       - build_and_test_java_binding:
           make_env: "OS_ARCH=aarch64"
