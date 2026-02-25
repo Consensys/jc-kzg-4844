@@ -1,6 +1,6 @@
 # jc-kzg-4844
 
-[![Build Status](https://circleci.com/gh/Consensys/jc-kzg-4844.svg?style=svg)](https://circleci.com/gh/Consensys/workflows/jc-kzg-4844)
+[![ci](https://github.com/Consensys/jc-kzg-4844/actions/workflows/ci.yml/badge.svg)](https://github.com/Consensys/jc-kzg-4844/actions/workflows/ci.yml)
 [![GitHub license](https://img.shields.io/github/license/Consensys/jc-kzg-4844.svg?logo=apache)](https://github.com/Consensys/jc-kzg-4844/blob/master/LICENSE)
 [![Version of 'c-kzg-4844'](https://img.shields.io/badge/c--kzg--4844-v2.1.5-blue.svg)](https://github.com/ethereum/c-kzg-4844/releases/tag/v2.1.5)
 [![Maven Central](https://img.shields.io/maven-central/v/io.consensys.protocols/jc-kzg-4844)](https://central.sonatype.com/artifact/io.consensys.protocols/jc-kzg-4844)
