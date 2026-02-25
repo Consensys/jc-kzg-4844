@@ -1,0 +1,201 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  x86-64-linux-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin' 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang
+      - name: Build blst
+        run: |
+          cd c-kzg-4844/src
+          make build_blst -B
+      - name: Build and test java binding
+        run: |
+          cd c-kzg-4844/bindings/java
+          make build test -B
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-lib-linux-amd64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+
+  arm64-linux-build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin' 
+          architecture: 'arm64'  
+      - name: Build blst
+        run: |
+          cd c-kzg-4844/src
+          make build_blst -B
+      - name: Build and test java binding
+        run: |
+          cd c-kzg-4844/bindings/java
+          make OS_ARCH=aarch64 build test -B
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-lib-linux-aarch64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
+
+  mac-os-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin' 
+      - name: Build blst (arm64)
+        run: |
+          cd c-kzg-4844/src
+          make build_blst -B
+      - name: Build and test java binding (arm64)
+        run: |
+          cd c-kzg-4844/bindings/java
+          make build test -B
+      - name: Build blst (x86_64)
+        run: |
+          cd c-kzg-4844/src
+          make CC="cc -arch x86_64" build_blst -B
+      - name: Build and test java binding (x86_64)
+        run: |
+          cd c-kzg-4844/bindings/java
+          make CC_FLAGS="-target x86_64-apple-macos" OS_ARCH=x86_64 build test -B
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-libs-macos
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/
+
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin' 
+      - name: Install build tools
+        run: |
+          choco install make
+          choco install mingw --version 12.2.0.03042023 --allow-downgrade --yes
+      - name: Build blst
+        shell: bash
+        run: |
+          cd c-kzg-4844/src
+          make build_blst -B
+      - name: Build and test java binding
+        shell: bash
+        run: |
+          cd c-kzg-4844/bindings/java
+          make build
+          ./gradlew.bat clean check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-lib-windows-amd64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+
+  assemble:
+    needs: [x86-64-linux-build, arm64-linux-build, mac-os-build, windows-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin' 
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-lib-linux-amd64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-lib-linux-aarch64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/aarch64
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-libs-macos
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-lib-windows-amd64
+          path: c-kzg-4844/bindings/java/src/main/resources/ethereum/ckzg4844/lib/amd64
+      - name: Copy java classes and generated libraries
+        run: |
+          cd c-kzg-4844/bindings/java/
+
+          SRCDIR="../../../src/main/java/ethereum/ckzg4844"
+          RESOURCEDIR="../../../src/main/resources/ethereum/ckzg4844"
+
+          mkdir -p $SRCDIR $RESOURCEDIR
+
+          cp src/main/java/ethereum/ckzg4844/*.java $SRCDIR
+
+          cp -R src/main/resources/ethereum/ckzg4844/lib $RESOURCEDIR
+      - name: Build Jar
+        run: ./gradlew --no-daemon --parallel build
+      - name: Check Jar
+        run: ./gradlew --no-daemon --info checkJarContents
+      - name: Store Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: build/libs
+      - name: Upload assembled workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: assembled-workspace
+          path: |
+            src/main/
+            build/libs/
+
+  publish:
+    needs: [assemble]
+    environment: publish    
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: actions/download-artifact@v4
+        with:
+          name: assembled-workspace
+          path: .
+      - name: Publish
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.JRELEASER_MAVENCENTRAL_PASSWORD }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+        run: ./gradlew --no-daemon --parallel --stacktrace checkJarContents publish jreleaserFullRelease
